@@ -1,0 +1,143 @@
+/* ═══════════════════════════════════════════
+   ATLAS ALIVE — Map Theme Filters
+   Applied to the map container via CSS filters
+   ═══════════════════════════════════════════ */
+
+/* ── Standard / Dark (default) ── */
+#map-container {
+  transition: filter var(--transition-slow);
+}
+
+/* ── Night Mode (Red Tint) ── */
+/* Preserves operator night vision. Red light doesn't
+   shrink pupils, so transitioning away from the screen
+   keeps your eyes adapted to the dark. */
+[data-theme="night"] #map-container {
+  filter: 
+    sepia(1)
+    saturate(4)
+    hue-rotate(320deg)
+    brightness(0.55)
+    contrast(1.1);
+}
+
+/* ── Ultra-Power Mode (High-Contrast B&W) ── */
+/* On OLED screens, true black pixels consume zero power.
+   This mode maximizes black area and eliminates color
+   processing to extend battery life in emergencies. */
+[data-theme="ultra-power"] #map-container {
+  filter: 
+    grayscale(1)
+    contrast(2)
+    brightness(0.7);
+}
+
+/* ── MapLibre overrides ── */
+.maplibregl-map {
+  font-family: var(--font-primary) !important;
+}
+
+/* Hide default attribution in favor of custom one */
+.maplibregl-ctrl-attrib {
+  display: none !important;
+}
+
+/* Custom zoom controls */
+.maplibregl-ctrl-group {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-lg) !important;
+  overflow: hidden !important;
+}
+
+.maplibregl-ctrl-group button {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  border-color: var(--glass-border) !important;
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--glass-border) !important;
+}
+
+.maplibregl-ctrl-group button:hover {
+  background: rgba(255,255,255,0.08) !important;
+}
+
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1) brightness(0.85);
+}
+
+[data-theme="ultra-power"] .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+
+/* GPS accuracy circle */
+.gps-accuracy-ring {
+  border: 2px solid var(--color-gps);
+  background: var(--color-gps-ring);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* GPS dot marker */
+.gps-dot {
+  width: 16px;
+  height: 16px;
+  background: var(--color-gps);
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--color-gps-pulse), 0 0 20px var(--color-gps-ring);
+  position: relative;
+}
+
+.gps-dot::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--color-gps);
+  border-radius: 50%;
+  animation: pulseRing 2s ease-out infinite;
+  opacity: 0.6;
+}
+
+/* Heading cone */
+.gps-heading {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 20px solid var(--color-gps);
+  opacity: 0.4;
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: blur(1px);
+}
+
+[data-theme="night"] .gps-dot {
+  background: var(--color-danger);
+  border-color: #1a0000;
+  box-shadow: 0 0 8px rgba(255,50,50,0.5), 0 0 20px rgba(255,50,50,0.2);
+}
+
+[data-theme="night"] .gps-dot::after {
+  border-color: var(--color-danger);
+}
+
+[data-theme="ultra-power"] .gps-dot {
+  background: white;
+  border-color: black;
+  box-shadow: 0 0 8px rgba(255,255,255,0.3);
+}
+
+[data-theme="ultra-power"] .gps-dot::after {
+  border-color: white;
+}
