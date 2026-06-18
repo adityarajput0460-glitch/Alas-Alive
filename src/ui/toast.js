@@ -33,7 +33,17 @@ export function showToast(message, type = 'info', duration = 3500) {
 
   c.appendChild(toast);
 
+  // Trigger enter animation on next frame
+  requestAnimationFrame(() => toast.classList.add('is-visible'));
+
+  // Start exit animation
+  setTimeout(() => {
+    toast.classList.add('is-exiting');
+  }, duration);
+
+  // Remove from DOM after exit animation completes
   setTimeout(() => {
     toast.remove();
-  }, duration + 500);
+  }, duration + 400);
 }
+

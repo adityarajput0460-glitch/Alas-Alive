@@ -394,6 +394,17 @@ function bindFABs() {
       showToast('No GPS fix yet. Enable GPS in Settings.', 'warning');
     }
   });
+
+  document.getElementById('fab-compass')?.addEventListener('click', () => {
+    const pos = getCurrentPosition();
+    if (pos && pos.heading !== null && pos.heading !== undefined) {
+      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+      const dir = dirs[Math.round(pos.heading / 45) % 8];
+      showToast(`🧭 Heading: ${Math.round(pos.heading)}° ${dir}`, 'info');
+    } else {
+      showToast('Enable GPS tracking for compass heading', 'warning');
+    }
+  });
 }
 
 function bindPanels() {
@@ -543,7 +554,11 @@ function openPanel(id) {
 function closeAllPanels() {
   document.querySelectorAll('.slide-panel').forEach(p => p.classList.remove('is-open'));
   document.getElementById('overlay-backdrop')?.classList.remove('is-visible');
+  // Reset nav bar to Map when closing panels
+  document.querySelectorAll('.nav-bar__item').forEach(b => b.classList.remove('is-active'));
+  document.getElementById('nav-map')?.classList.add('is-active');
   activePanel = null;
+  activeNav = 'map';
 }
 
 // ─── Wiki Navigation ───
