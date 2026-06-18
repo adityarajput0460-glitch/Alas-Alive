@@ -59,17 +59,46 @@ export async function getRegions() { return db.regions.toArray(); }
 export async function deleteRegion(id) { return db.regions.delete(id); }
 
 export async function seedDemoPOIs() {
-  const count = await db.pois.count();
-  if (count > 0) return;
+  // Clear old database data to ensure we re-seed with the updated Delhi POI catalog
+  await db.pois.clear();
 
   const demoPOIs = [
+    // Hospitals
     { name: 'City General Hospital', category: 'hospital', lat: 28.6139, lng: 77.2090, description: 'Major trauma center' },
     { name: 'AIIMS Delhi', category: 'hospital', lat: 28.5672, lng: 77.2100, description: 'Premier medical institute' },
+    { name: 'Safdarjung Hospital', category: 'hospital', lat: 28.5674, lng: 77.2050, description: 'Emergency medical services' },
+    { name: 'Lok Nayak Hospital', category: 'hospital', lat: 28.6360, lng: 77.2370, description: 'General hospital with trauma care' },
+
+    // Clinics & Pharmacies
+    { name: 'Community Pharmacy', category: 'pharmacy', lat: 28.6200, lng: 77.2150, description: 'Basic medical supplies and drugs' },
+    { name: 'Connaught Place Clinic', category: 'clinic', lat: 28.6300, lng: 77.2210, description: 'Outpatient clinic' },
+
+    // Shelters & Rally Points
     { name: 'Red Cross Shelter', category: 'shelter', lat: 28.6280, lng: 77.2195, description: 'Emergency shelter, 200 capacity' },
-    { name: 'Yamuna Water Point', category: 'water', lat: 28.6508, lng: 77.2405, description: 'Purification station needed' },
+    { name: 'Bangla Sahib Shelter', category: 'shelter', lat: 28.6263, lng: 77.2091, description: 'Community shelter, meals served' },
+    { name: 'Sacred Heart Shelter', category: 'shelter', lat: 28.6288, lng: 77.2062, description: 'Crisis housing' },
     { name: 'India Gate Rally Point', category: 'rally', lat: 28.6129, lng: 77.2295, description: 'Open area, easily visible landmark' },
+
+    // Water Sources
+    { name: 'Yamuna Water Point', category: 'water', lat: 28.6508, lng: 77.2405, description: 'Raw water station' },
+    { name: 'Nehru Park Water Fountain', category: 'water', lat: 28.5910, lng: 77.1970, description: 'Public drinking water point' },
+    { name: 'Lodhi Gardens Water Point', category: 'water', lat: 28.5930, lng: 77.2185, description: 'Filtered public water station' },
+
+    // Food Distribution
     { name: 'Central Food Bank', category: 'food', lat: 28.6353, lng: 77.2249, description: 'Dry rations available' },
-    { name: 'Community Pharmacy', category: 'pharmacy', lat: 28.6200, lng: 77.2150, description: 'Basic medical supplies' },
+    { name: 'CP Soup Kitchen', category: 'food', lat: 28.6335, lng: 77.2190, description: 'Hot meals served daily' },
+    { name: 'Sarojini Nagar Food Depot', category: 'food', lat: 28.5770, lng: 77.1980, description: 'Emergency food supplies' },
+
+    // Police Stations
+    { name: 'Delhi Police Headquarters', category: 'police', lat: 28.6276, lng: 77.2282, description: 'Central Police Command' },
+    { name: 'Parliament House Police Station', category: 'police', lat: 28.6201, lng: 77.2098, description: 'Local security and police station' },
+    { name: 'Connaught Place Police Station', category: 'police', lat: 28.6310, lng: 77.2180, description: 'CP police precinct' },
+
+    // Fire Stations
+    { name: 'Connaught Place Fire Station', category: 'fire', lat: 28.6304, lng: 77.2245, description: 'Central New Delhi Fire Station' },
+    { name: 'Chanakyapuri Fire Station', category: 'fire', lat: 28.5982, lng: 77.1950, description: 'Emergency fire rescue squad' },
+
+    // Danger Zones
     { name: 'Connaught Place Danger Zone', category: 'danger', lat: 28.6315, lng: 77.2167, description: 'Structural damage reported' }
   ];
 

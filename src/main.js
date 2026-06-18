@@ -49,6 +49,13 @@ async function boot() {
     }
   });
 
+  // Autostart GPS tracking
+  try {
+    startTracking('normal');
+  } catch (e) {
+    console.warn('[ATLAS] GPS autostart failed:', e);
+  }
+
   // 4. Network status monitoring
   updateNetworkStatus();
   window.addEventListener('online', () => {

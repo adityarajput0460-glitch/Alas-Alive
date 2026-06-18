@@ -98,12 +98,6 @@
   min-height: 3rem;
 }
 
-.btn svg {
-  width: 1rem;
-  height: 1rem;
-  flex-shrink: 0;
-}
-
 /* ── Cards ── */
 .card {
   background: var(--glass-bg);
@@ -208,20 +202,9 @@
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-lg);
   pointer-events: auto;
+  animation: slideDown var(--transition-slow) ease, fadeOut var(--transition-slow) ease forwards;
+  animation-delay: 0s, 3s;
   font-size: var(--text-sm);
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: opacity var(--transition-slow) ease, transform var(--transition-slow) ease;
-}
-
-.toast.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.toast.is-exiting {
-  opacity: 0;
-  transform: translateY(-10px);
 }
 
 .toast--success { border-left: 3px solid var(--color-safe); }
@@ -238,6 +221,11 @@
 .toast__message {
   flex: 1;
   color: var(--color-cloud);
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
 }
 
 /* ── Badge ── */

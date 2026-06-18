@@ -101,3 +101,33 @@ export function formatCoords(lat, lng) {
     lng: `${Math.abs(lng).toFixed(5)}°${lng >= 0 ? 'E' : 'W'}`
   };
 }
+
+export function getCardinalDirection(bearing) {
+  const directions = ['North', 'North-East', 'East', 'South-East', 'South', 'South-West', 'West', 'North-West'];
+  const index = Math.round(bearing / 45) % 8;
+  return directions[index];
+}
+
+let deviceHeading = null;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('deviceorientationabsolute', (e) => {
+    if (e.alpha !== null) {
+      deviceHeading = 360 - e.alpha;
+    }
+  }, true);
+
+  window.addEventListener('deviceorientation', (e) => {
+    if (e.webkitCompassHeading !== undefined) {
+      deviceHeading = e.webkitCompassHeading;
+    } else if (e.alpha !== null && deviceHeading === null) {
+      deviceHeading = 360 - e.alpha;
+    }
+  }, true);
+}
+
+export function getDeviceHeading() {
+  return deviceHeading;
+}
+
+

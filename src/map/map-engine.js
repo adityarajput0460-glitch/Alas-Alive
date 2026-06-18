@@ -6,7 +6,6 @@
 import maplibregl from 'maplibre-gl';
 import { Protocol } from 'pmtiles';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { layers, namedFlavor } from '@protomaps/basemaps';
 
 let map = null;
 let protocol = null;
@@ -20,8 +19,6 @@ const DEFAULT_ZOOM = 4;
 
 /**
  * Map style definitions
- * Uses @protomaps/basemaps for production-ready layer definitions
- * that match the current Protomaps v4 source-layer schema.
  */
 const MAP_STYLES = {
   dark: {
@@ -30,15 +27,239 @@ const MAP_STYLES = {
     sources: {
       'protomaps': {
         type: 'vector',
-        url: 'pmtiles://https://build.protomaps.com/20250615.pmtiles',
+        url: 'pmtiles://https://build.protomaps.com/20260615.pmtiles',
         attribution: '© OpenStreetMap contributors'
       }
     },
     glyphs: 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf',
-    sprite: 'https://protomaps.github.io/basemaps-assets/sprites/v4/dark',
-    layers: layers("protomaps", namedFlavor("dark"))
+    layers: createDarkLayers()
   }
 };
+
+/**
+ * Create dark theme map layers for Protomaps basemap
+ */
+function createDarkLayers() {
+  return [
+    // Background
+    {
+      id: 'background',
+      type: 'background',
+      paint: { 'background-color': '#05080e' }
+    },
+    // Earth / Land
+    {
+      id: 'earth',
+      type: 'fill',
+      source: 'protomaps',
+      'source-layer': 'earth',
+      paint: {
+        'fill-color': '#0e121a'
+      }
+    },
+    // Landuse (parks, forests, etc.)
+    {
+      id: 'landuse_park',
+      type: 'fill',
+      source: 'protomaps',
+      'source-layer': 'landuse',
+      filter: ['in', 'pmap:kind', 'park', 'forest', 'wood', 'nature_reserve'],
+      paint: {
+        'fill-color': '#041c0e',
+        'fill-opacity': 0.7
+      }
+    },
+    // Water
+    {
+      id: 'water',
+      type: 'fill',
+      source: 'protomaps',
+      'source-layer': 'water',
+      paint: {
+        'fill-color': '#0a1c33',
+        'fill-opacity': 0.9
+      }
+    },
+    // Water outline for high contrast
+    {
+      id: 'water_outline',
+      type: 'line',
+      source: 'protomaps',
+      'source-layer': 'water',
+      paint: {
+        'line-color': '#0055a5',
+        'line-width': 1.2,
+        'line-opacity': 0.6
+      }
+    },
+    // Buildings
+    {
+      id: 'buildings',
+      type: 'fill',
+      source: 'protomaps',
+      'source-layer': 'buildings',
+      minzoom: 13,
+      paint: {
+        'fill-color': '#162135',
+        'fill-opacity': 0.85
+      }
+    },
+    // Roads - Highway Casing
+    {
+      id: 'roads_highway_casing',
+      type: 'line',
+      source: 'protomaps',
+      'source-layer': 'roads',
+      filter: ['in', 'pmap:kind', 'highway', 'motorway'],
+      paint: {
+        'line-color': '#001633',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 5, 1, 12, 6, 18, 16]
+      },
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      }
+    },
+    // Roads - Highway Fill
+    {
+      id: 'roads_highway',
+      type: 'line',
+      source: 'protomaps',
+      'source-layer': 'roads',
+      filter: ['in', 'pmap:kind', 'highway', 'motorway'],
+      paint: {
+        'line-color': '#00b4ff',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 5, 0.5, 12, 3.5, 18, 11]
+      },
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      }
+    },
+    // Roads - Major Casing
+    {
+      id: 'roads_major_casing',
+      type: 'line',
+      source: 'protomaps',
+      'source-layer': 'roads',
+      filter: ['in', 'pmap:kind', 'major_road', 'trunk', 'primary', 'secondary'],
+      paint: {
+        'line-color': '#050e1b',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 14, 5, 18, 11]
+      },
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      }
+    },
+    // Roads - Major Fill
+    {
+      id: 'roads_major',
+      type: 'line',
+      source: 'protomaps',
+      'source-layer': 'roads',
+      filter: ['in', 'pmap:kind', 'major_road', 'trunk', 'primary', 'secondary'],
+      paint: {
+        'line-color': '#1a70c0',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.3, 14, 2.5, 18, 7]
+      },
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      }
+    },
+    // Roads - Minor
+    {
+      id: 'roads_minor',
+      type: 'line',
+      source: 'protomaps',
+      'source-layer': 'roads',
+      filter: ['in', 'pmap:kind', 'minor_road', 'tertiary', 'residential', 'service'],
+      minzoom: 12,
+      paint: {
+        'line-color': '#172336',
+        'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.4, 18, 4.5]
+      },
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      }
+    },
+    // Boundaries (Country Borders)
+    {
+      id: 'boundaries',
+      type: 'line',
+      source: 'protomaps',
+      'source-layer': 'boundaries',
+      paint: {
+        'line-color': '#00f0ff',
+        'line-width': 1.5,
+        'line-dasharray': [4, 3],
+        'line-opacity': 0.85
+      }
+    },
+    // Place labels - Countries
+    {
+      id: 'places_country',
+      type: 'symbol',
+      source: 'protomaps',
+      'source-layer': 'places',
+      filter: ['==', 'pmap:kind', 'country'],
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 2, 11, 6, 15],
+        'text-transform': 'uppercase',
+        'text-letter-spacing': 0.1,
+        'text-max-width': 8
+      },
+      paint: {
+        'text-color': '#ffffff',
+        'text-halo-color': '#05080e',
+        'text-halo-width': 2.5
+      }
+    },
+    // Place labels - Cities
+    {
+      id: 'places_city',
+      type: 'symbol',
+      source: 'protomaps',
+      'source-layer': 'places',
+      filter: ['in', 'pmap:kind', 'city', 'town'],
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': ['interpolate', ['linear'], ['zoom'], 6, 9, 14, 15],
+        'text-max-width': 6
+      },
+      paint: {
+        'text-color': '#e6f0ff',
+        'text-halo-color': '#05080e',
+        'text-halo-width': 2.2
+      }
+    },
+    // Road labels
+    {
+      id: 'roads_labels',
+      type: 'symbol',
+      source: 'protomaps',
+      'source-layer': 'roads',
+      minzoom: 14,
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-font': ['Noto Sans Regular'],
+        'text-size': 10,
+        'symbol-placement': 'line',
+        'text-max-angle': 30
+      },
+      paint: {
+        'text-color': '#5c708a',
+        'text-halo-color': '#05080e',
+        'text-halo-width': 1.5
+      }
+    }
+  ];
+}
 
 /**
  * Initialize the map engine
@@ -245,3 +466,73 @@ export function destroyMap() {
     map = null;
   }
 }
+
+export function drawRouteLine(coordinates) {
+  if (!map || !coordinates || coordinates.length < 2) return;
+
+  const geojson = {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'LineString',
+      coordinates: coordinates
+    }
+  };
+
+  if (map.getSource('route')) {
+    map.getSource('route').setData(geojson);
+  } else {
+    map.addSource('route', {
+      type: 'geojson',
+      data: geojson
+    });
+
+    // Casing layer for contrast
+    map.addLayer({
+      id: 'route-casing',
+      type: 'line',
+      source: 'route',
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      paint: {
+        'line-color': '#001a33',
+        'line-width': 9
+      }
+    });
+
+    // Core neon route line
+    map.addLayer({
+      id: 'route',
+      type: 'line',
+      source: 'route',
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      paint: {
+        'line-color': '#00a2ff',
+        'line-width': 5
+      }
+    });
+  }
+}
+
+export function clearRouteLine() {
+  if (!map) return;
+  if (map.getLayer('route')) map.removeLayer('route');
+  if (map.getLayer('route-casing')) map.removeLayer('route-casing');
+  if (map.getSource('route')) map.removeSource('route');
+}
+
+export function fitRouteBounds(fromLngLat, toLngLat) {
+  if (!map) return;
+  map.fitBounds([fromLngLat, toLngLat], {
+    padding: { top: 180, bottom: 120, left: 60, right: 60 },
+    maxZoom: 16,
+    duration: 1200
+  });
+}
+
+
